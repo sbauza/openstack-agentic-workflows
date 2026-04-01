@@ -9,10 +9,11 @@ You are reviewing OpenStack Nova code changes. Your goal is to ensure that the c
 
 **Do not re-check what deterministic tools already enforce.** Style violations (N-codes, import ordering, etc.) are caught by `tox -e pep8`. Focus your review on things that require human judgement.
 
-**Agent Collaboration**: Invoke shared agent personas for specialized review where appropriate:
+**Agent Collaboration — MANDATORY**: Always invoke **@nova-core.md** for every review. This is not optional — nova-core assesses versioning rules, conductor boundary, API microversions, upgrade safety, architectural fit, and general review principles (including the loud-failure rule). Skip this agent only if the user explicitly asks to.
 
-- **@nova-core.md** — Invoke for every review to assess versioning rules, conductor boundary, API microversions, upgrade safety, and architectural fit
-- **@nova-coresec.md** — Invoke when the change touches `nova/privsep/`, `nova/policies/`, or contains patterns like `processutils.execute`, raw SQL, credential-adjacent code, or SSL/TLS operations (`ssl.SSLContext`, `load_cert_chain`, `wrap_socket`, certificate/key file handling)
+Additionally, invoke **@nova-coresec.md** when the change touches `nova/privsep/`, `nova/policies/`, or contains patterns like `processutils.execute`, raw SQL, credential-adjacent code, or SSL/TLS operations (`ssl.SSLContext`, `load_cert_chain`, `wrap_socket`, certificate/key file handling).
+
+**Context inheritance**: When invoking subagents, always pass the workflow `rules.md` and `knowledge/nova.md` content as context. Workflow rules and project knowledge take precedence over agent persona guidance.
 
 ## Input
 
@@ -67,8 +68,8 @@ Do not review the diff in isolation. Understand the broader context:
 - If reviewing a bug fix, understand the code path that leads to the bug — does the fix address the root cause or just a symptom?
 - If the change seems cosmetic or tangential to the stated intent, flag it — unrelated modifications should be in separate patches
 - **Compare with baseline behavior**: Before flagging a potential runtime failure in changed code, check whether the baseline (pre-patch) code had the same pattern. If both old and new code pass the same values (e.g., `None` for an optional parameter), the behavior is inherited from the original design, not introduced by this change. Only flag it if the change makes things **worse** than the baseline.
-- **Trace callers and config prerequisites**: Before reporting a possible None/missing-value bug, trace how the code is actually reached. Check config option definitions, documentation, and call sites to determine whether the problematic input is possible in a valid deployment. A code path that requires operator misconfiguration to trigger is a config-validation improvement opportunity, not a bug in the patch under review.
-- **Assess security impact of suggested fixes**: When your suggested fix would skip or conditionalize a security operation (certificate loading, authentication check, TLS setup, token validation), evaluate whether the "fix" weakens security. A conditional guard that silently degrades a security property is worse than failing loudly on misconfiguration. Prefer explicit failure on bad config over silent security degradation.
+- **Verify reachability before flagging bugs**: See `rules.md` — before reporting a potential runtime failure, you MUST trace the full activation path to callers, identify the feature toggle that gates the code, then check config definitions. Critically: when a feature toggle enables a code path, an individual config option being optional does NOT mean None is valid when the feature is active. Check what the feature requires when enabled. Misconfiguration is not a code bug.
+- **Prefer loud failure over silent security degradation**: See `rules.md` — do not propose guards that skip security operations to handle misconfiguration. A crash on missing credentials is correct behavior.
 
 ### 4. Versioning Rules Check (Blockers)
 
