@@ -1,12 +1,12 @@
 # OpenStack Agentic Workflows
 
-Custom workflow repository for OpenStack services, primarily consumed by the [Ambient Code Platform](https://ambient.code) (ACP).
+Workflow repository for OpenStack services, usable with **Cursor**, **Claude Code**, and the **Ambient Code Platform** (ACP).
 
 ## Overview
 
-This repository contains ACP workflow definitions tailored for OpenStack development. Each workflow provides structured processes — skills, rules, and project-specific knowledge — that guide AI agents through complex OpenStack tasks like code review, spec authoring, bug triage, backporting, and Gerrit interaction.
+This repository contains workflow definitions tailored for OpenStack development. Each workflow provides structured processes — skills, rules, and project-specific knowledge — that guide AI agents through complex OpenStack tasks like code review, spec authoring, bug triage, backporting, and Gerrit interaction.
 
-The platform automatically discovers workflows from this repository. Any directory under `workflows/` with a valid `.ambient/ambient.json` file appears in the ACP UI.
+All content is authored once and discovered by multiple tools through standard conventions and symlinks — no duplication across tools.
 
 ## Available Workflows
 
@@ -20,7 +20,50 @@ The platform automatically discovers workflows from this repository. Any directo
 
 ## Using Workflows
 
-This repository is designed to be consumed via the **Custom Workflow** feature in ACP:
+### Cursor
+
+Clone or open this repository as a project in Cursor. Everything is auto-discovered:
+
+- **Skills** from `.agents/skills/` — all 17 workflow skills are available via symlinks, prefixed by workflow to avoid name collisions (e.g., `gtg-backport`, `jira-triage`, `review-code-review`). Type `/` in the agent chat to invoke a skill directly.
+- **Rules** from `.cursor/rules/` — the global behavioral rules (`rules.md`) are loaded via an `.mdc` rule file with `alwaysApply: true`
+- **Agent personas** from `agents/` — the shared persona files (e.g., `nova-core.md`, `bug-triager.md`) are auto-detected
+- **Project context** from `AGENTS.md` — read automatically at startup, including nested `AGENTS.md` files in each workflow directory
+
+No plugin or additional configuration is needed. Open the repository in Cursor and all skills, rules, and personas are available immediately.
+
+### Claude Code
+
+Clone this repository and run `claude` from within it. Claude Code automatically reads:
+
+- **`CLAUDE.md`** at the project root — a thin pointer that loads `AGENTS.md` (project guidelines) and `rules.md` (behavioral rules) into the agent context
+- **Skills** from `.claude/skills/*/SKILL.md` within each workflow directory — these are the canonical skill files that Cursor also reads via symlinks
+- **Per-workflow context** — each workflow has its own `CLAUDE.md` that loads the workflow's `AGENTS.md` and `rules.md`, plus shared knowledge from `knowledge/` and agent personas from `agents/`
+
+#### Working with an OpenStack repo (e.g., Nova)
+
+The workflows in this repository are designed to analyze and act on OpenStack project source code (Nova, Neutron, etc.) without bundling that code here. To use a workflow with Claude Code:
+
+1. Clone both repositories side by side:
+
+   ```bash
+   git clone https://github.com/sbauza/openstack-agentic-workflows.git
+   git clone https://opendev.org/openstack/nova.git
+   ```
+
+2. Run `claude` from the workflow directory:
+
+   ```bash
+   cd openstack-agentic-workflows/workflows/nova-review
+   claude
+   ```
+
+3. Claude Code loads the workflow's `CLAUDE.md`, skills, rules, and personas automatically. It can read and edit files anywhere on disk, so it will access the Nova repo at its cloned path (e.g., `../../nova/` or `/path/to/nova/`) when skills reference it.
+
+This works because Claude Code is not restricted to the current directory for file access — it uses the working directory only for context discovery (`CLAUDE.md`, `.claude/skills/`). The skills themselves reference the target repo by path.
+
+### Ambient Code Platform (ACP)
+
+Use the **Custom Workflow** feature in ACP:
 
 1. In your ACP session, select **"Custom Workflow..."**
 2. Fill in the fields:
@@ -28,6 +71,18 @@ This repository is designed to be consumed via the **Custom Workflow** feature i
    - **Branch**: `main` (or a feature branch for testing)
    - **Path**: path to the workflow directory (e.g., `workflows/nova-review`)
 3. Click **"Load Workflow"**
+
+ACP reads `.ambient/ambient.json` for the workflow configuration (`systemPrompt`, `startupPrompt`) and discovers skills from `.claude/skills/*/SKILL.md`.
+
+### How Discovery Works Across Tools
+
+| Component | Canonical location | Cursor | Claude Code | ACP |
+|-----------|-------------------|--------|-------------|-----|
+| Skills | `workflows/{name}/.claude/skills/*/SKILL.md` | `.agents/skills/` symlinks | `.claude/skills/` directly | via `systemPrompt` |
+| Rules | `rules.md` | `.cursor/rules/*.mdc` | `CLAUDE.md` → `@rules.md` | `systemPrompt` embeds rules |
+| Personas | `agents/*.md` | auto-detected | `@../../agents/*.md` refs | `systemPrompt` references |
+| Knowledge | `knowledge/*.md` | auto-detected | `@../../knowledge/*.md` refs | `systemPrompt` references |
+| Project context | `AGENTS.md` | auto-detected | `CLAUDE.md` → `@AGENTS.md` | `systemPrompt` embeds |
 
 ## Shared Knowledge
 
@@ -56,62 +111,40 @@ See [`agents/README.md`](agents/README.md) for details on how personas work, whe
 ## Repository Structure
 
 ```text
+.agents/
+└── skills/                    # Cursor skill discovery (symlinks to .claude/skills/)
+    ├── gtg-backport/          # → workflows/gerrit-to-gitlab/.claude/skills/backport
+    ├── jira-triage/           # → workflows/jira-issue-triage/.claude/skills/triage
+    ├── review-code-review/    # → workflows/nova-review/.claude/skills/code-review
+    ├── spec-create-spec/      # → workflows/nova-spec-workflow/.claude/skills/create-spec
+    └── ...                    # (17 symlinks total, prefixed by workflow)
+.cursor/
+└── rules/
+    └── openstack-rules.mdc   # Cursor rule file (references rules.md)
 agents/
-├── nova-core.md           # Nova core reviewer persona
-├── nova-coresec.md        # Nova security reviewer persona
-├── bug-triager.md         # Bug triage specialist persona
-├── backport-specialist.md # Backport specialist persona
-├── openstack-operator.md  # Operator perspective persona
-└── README.md              # Persona documentation
+├── nova-core.md               # Nova core reviewer persona
+├── nova-coresec.md            # Nova security reviewer persona
+├── bug-triager.md             # Bug triage specialist persona
+├── backport-specialist.md     # Backport specialist persona
+├── openstack-operator.md     # Operator perspective persona
+└── README.md                  # Persona documentation
 knowledge/
-└── nova.md                # Shared Nova project reference (used by Nova workflows)
+└── nova.md                    # Shared Nova project reference (used by Nova workflows)
 workflows/
-├── nova-review/           # Nova code and spec review
+├── nova-review/               # Nova code and spec review
 │   ├── .ambient/
-│   │   └── ambient.json   # Workflow config (name, description, prompts)
+│   │   └── ambient.json       # Workflow config (name, description, prompts)
 │   ├── .claude/
-│   │   └── skills/        # Review skills (spec-review, code-review, gerrit-comment)
-│   ├── AGENTS.md          # Nova project reference (model-agnostic)
-│   ├── CLAUDE.md          # Pointer to AGENTS.md
-│   ├── rules.md           # Behavioral rules for the agent
-│   └── README.md
-├── nova-bug-triage/       # Nova Launchpad bug triage
-│   ├── .ambient/
-│   │   └── ambient.json
-│   ├── .claude/
-│   │   └── skills/        # Triage skills (triage, reproduce, report, update-launchpad)
+│   │   └── skills/            # Review skills (spec-review, code-review, gerrit-comment)
 │   ├── AGENTS.md
 │   ├── CLAUDE.md
 │   ├── rules.md
 │   └── README.md
-├── jira-issue-triage/     # Nova JIRA issue triage
-│   ├── .ambient/
-│   │   └── ambient.json
-│   ├── .claude/
-│   │   └── skills/        # Triage skills (triage, reproduce, report, update-jira)
-│   ├── AGENTS.md
-│   ├── CLAUDE.md
-│   ├── rules.md
-│   └── README.md
-├── gerrit-to-gitlab/      # Gerrit-to-GitLab backport workflow
-│   ├── .ambient/
-│   │   └── ambient.json
-│   ├── .claude/
-│   │   └── skills/        # Backport skills (backport, test, create-mr)
-│   ├── AGENTS.md
-│   ├── CLAUDE.md
-│   ├── rules.md
-│   └── README.md
-├── nova-spec-workflow/    # Nova spec authoring from JIRA RFEs or descriptions
-│   ├── .ambient/
-│   │   └── ambient.json
-│   ├── .claude/
-│   │   └── skills/        # Spec skills (create-spec, refine-spec, blueprint)
-│   ├── AGENTS.md
-│   ├── CLAUDE.md
-│   ├── rules.md
-│   └── README.md
-└── [future-workflows]/    # Workflows for other OpenStack services
+├── nova-bug-triage/           # Nova Launchpad bug triage
+├── jira-issue-triage/         # Nova JIRA issue triage
+├── gerrit-to-gitlab/          # Gerrit-to-GitLab backport workflow
+├── nova-spec-workflow/        # Nova spec authoring from JIRA RFEs or descriptions
+└── [future-workflows]/        # Workflows for other OpenStack services
 ```
 
 ### Workflow Requirements
@@ -125,7 +158,7 @@ Every workflow must have:
 
 - **Do not duplicate deterministic checks.** If a linter or CI job already enforces a rule, the workflow should not re-check it.
 - **Use in-tree docs as the source of truth.** Reference each project's contributor documentation rather than forking rules into the workflow.
-- **Model-agnostic where possible.** Project knowledge goes in `AGENTS.md` (usable by any AI tool); `CLAUDE.md` is a thin pointer for Claude-specific tooling.
+- **Multi-tool, zero duplication.** Skills, rules, and knowledge are authored once and discovered by multiple tools via symlinks and pointer files. `AGENTS.md` is the model-agnostic reference; `CLAUDE.md` points to it for Claude; `.agents/skills/` symlinks expose `.claude/skills/` to Cursor; `.cursor/rules/` references `rules.md`.
 - **Human decides, agent assists.** Workflows provide analysis and draft comments, but the human makes final decisions (e.g., Gerrit votes).
 
 ## Contributing
