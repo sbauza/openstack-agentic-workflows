@@ -1,4 +1,4 @@
-# Agent Guidelines for OpenStack Agentic Workloads
+# Agent Guidelines for OpenStack Agentic Workflows
 
 This document provides rules and guidance for AI agents making changes to this repository.
 
@@ -307,7 +307,7 @@ Use the "Custom Workflow" feature to test without merging to main:
 
 | Field | Value |
 |-------|-------|
-| **URL** | `https://github.com/sbauza/openstack-agentic-workloads.git` |
+| **URL** | `https://github.com/sbauza/openstack-agentic-workflows.git` |
 | **Branch** | The branch with your changes (e.g., `feature/my-changes`) |
 | **Path** | The workflow directory (e.g., `workflows/nova-review`) |
 

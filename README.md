@@ -1,4 +1,4 @@
-# OpenStack Agentic Workloads
+# OpenStack Agentic Workflows
 
 Custom workflow repository for OpenStack services, primarily consumed by the [Ambient Code Platform](https://ambient.code) (ACP).
 
@@ -24,7 +24,7 @@ This repository is designed to be consumed via the **Custom Workflow** feature i
 
 1. In your ACP session, select **"Custom Workflow..."**
 2. Fill in the fields:
-   - **URL**: `https://github.com/sbauza/openstack-agentic-workloads.git`
+   - **URL**: `https://github.com/sbauza/openstack-agentic-workflows.git`
    - **Branch**: `main` (or a feature branch for testing)
    - **Path**: path to the workflow directory (e.g., `workflows/nova-review`)
 3. Click **"Load Workflow"**
