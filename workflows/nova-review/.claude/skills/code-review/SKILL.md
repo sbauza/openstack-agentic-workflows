@@ -68,7 +68,7 @@ Do not review the diff in isolation. Understand the broader context:
 - If the change seems cosmetic or tangential to the stated intent, flag it — unrelated modifications should be in separate patches
 - **Compare with baseline behavior**: Before flagging a potential runtime failure in changed code, check whether the baseline (pre-patch) code had the same pattern. If both old and new code pass the same values (e.g., `None` for an optional parameter), the behavior is inherited from the original design, not introduced by this change. Only flag it if the change makes things **worse** than the baseline.
 - **Trace callers and config prerequisites**: Before reporting a possible None/missing-value bug, trace how the code is actually reached. Check config option definitions, documentation, and call sites to determine whether the problematic input is possible in a valid deployment. A code path that requires operator misconfiguration to trigger is a config-validation improvement opportunity, not a bug in the patch under review.
-- **Assess security impact of suggested fixes**: When your suggested fix would skip or conditionalize a security operation (certificate loading, authentication check, TLS setup, token validation), evaluate whether the "fix" weakens security. A conditional guard that silently degrades a security property is worse than failing loudly on misconfiguration. Prefer explicit failure on bad config over silent security degradation.
+- **Prefer loud failure over silent security degradation**: See `rules.md` — do not propose guards that skip security operations to handle misconfiguration. A crash on missing credentials is correct behavior.
 
 ### 4. Versioning Rules Check (Blockers)
 

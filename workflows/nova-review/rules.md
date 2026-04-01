@@ -68,6 +68,11 @@ Users can cancel at any prompt by typing 'cancel':
 - Every REST API operation prompts for fresh credentials
 - Credentials valid only for single session
 
+## Review Principles
+
+### Prefer loud failure over silent security degradation
+Never suggest a guard or conditional that skips a security operation (certificate loading, authentication check, TLS setup, token validation) to "fix" a potential crash on bad input. A `TypeError` or `FileNotFoundError` on operator misconfiguration is **always better** than silently degrading a security property. If code crashes because a required security credential is missing, that is correct behavior — flag it at most as a config-validation improvement opportunity, not as a bug in the patch. Do not propose `if value:` guards around security operations unless you have confirmed that the unguarded path is reachable under **valid** configuration.
+
 ## Writing Style
 
 Follow these guidelines when generating review artifacts:
