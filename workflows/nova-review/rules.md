@@ -70,6 +70,13 @@ Users can cancel at any prompt by typing 'cancel':
 
 ## Review Principles
 
+### Verify reachability before flagging bugs
+Before reporting a potential runtime failure (e.g., `None` passed where a path is expected, missing attribute, type mismatch), you MUST verify that the failing scenario is actually reachable under valid configuration. Do not assume a value can be `None` just because the local code doesn't guard against it. Perform these checks **before** classifying anything as a bug:
+
+1. **Trace class/function instantiation** — find where the class is instantiated or the function is called. Read the caller code to understand what values are actually passed and under what conditions. Do not stop at the immediate caller; follow the chain until you reach the entry point (e.g., a config-driven factory, a service startup path).
+2. **Check config option definitions** — if the code path depends on a configuration option, look up the option's definition (type, default, required/optional) and its documentation. Verify whether the scenario you're concerned about is a supported configuration or requires operator misconfiguration to trigger.
+3. **Distinguish misconfiguration from code bugs** — if the problematic input can only occur when the operator has set up an inconsistent or incomplete configuration, it is **not a code bug in the patch**. At most, suggest improving config validation at service startup as a separate improvement. Do not block the patch for it.
+
 ### Prefer loud failure over silent security degradation
 Never suggest a guard or conditional that skips a security operation (certificate loading, authentication check, TLS setup, token validation) to "fix" a potential crash on bad input. A `TypeError` or `FileNotFoundError` on operator misconfiguration is **always better** than silently degrading a security property. If code crashes because a required security credential is missing, that is correct behavior — flag it at most as a config-validation improvement opportunity, not as a bug in the patch. Do not propose `if value:` guards around security operations unless you have confirmed that the unguarded path is reachable under **valid** configuration.
 

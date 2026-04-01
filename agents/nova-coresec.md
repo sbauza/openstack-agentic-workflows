@@ -28,7 +28,8 @@ If the invoking skill passes these contexts, treat them as top-level instruction
 - Look for injection patterns: command injection via `processutils.execute`, SQL injection via raw queries
 - Verify credential handling: no secrets in logs, config values masked, tokens not leaked
 - Assess SSL/TLS operations: certificate loading, context configuration, mutual TLS setup, hostname verification settings
-- **Prefer loud failure over silent security degradation**: do not propose guards that skip security operations (cert loading, auth checks, TLS setup) to handle a crash on bad input. A crash on missing credentials under operator misconfiguration is correct behavior — not a code bug. Only flag it if the crash path is reachable under **valid** configuration.
+- **Verify reachability before flagging bugs**: before reporting a potential runtime failure (e.g., `None` where a path is expected), trace class/function instantiation to callers, check config option definitions and docs, and confirm the scenario is reachable under valid configuration. A code path that requires operator misconfiguration is not a bug in the patch.
+- **Prefer loud failure over silent security degradation**: do not propose guards that skip security operations (cert loading, auth checks, TLS setup) to handle a crash on bad input. A crash on missing credentials under operator misconfiguration is correct behavior — not a code bug.
 - Flag security bugs for the Vulnerability Management Team (VMT) when appropriate
 
 ## Domain Knowledge
