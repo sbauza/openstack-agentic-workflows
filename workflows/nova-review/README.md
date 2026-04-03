@@ -10,7 +10,9 @@ An ACP workflow for reviewing OpenStack Nova code and specifications.
 | `/code-review` | Review Nova code changes against coding conventions (N-codes), versioning rules, and testing requirements |
 | `/gerrit-comment` | Post a review as inline and top-level comments on a Gerrit change (uses Gerrit MCP if available, otherwise REST API with HTTP auth) |
 
-## Setup
+## Usage
+
+### Ambient Code Platform (ACP)
 
 This workflow works best when the Nova and nova-specs repositories are added to your ACP session:
 
@@ -33,6 +35,29 @@ The workflow supports two modes for posting reviews to Gerrit:
    - Falls back to manual artifact generation if authentication fails
 
 The workflow automatically detects Gerrit MCP availability at startup and adapts accordingly.
+
+### Claude Code
+
+Run `claude` from the workflow directory to auto-load skills, rules, and personas:
+
+```bash
+cd openstack-agentic-workflows/workflows/nova-review
+claude
+```
+
+Skills are available as slash commands: `/spec-review`, `/code-review`, `/gerrit-comment`. Agent personas (`nova-core`, `nova-coresec`) are loaded automatically via `CLAUDE.md`.
+
+### Cursor
+
+Open the repository root in Cursor. Skills are discovered via symlinks in `.agents/skills/` with the `review-` prefix:
+
+| Cursor Skill | Maps To |
+|--------------|---------|
+| `review-spec-review` | `/spec-review` |
+| `review-code-review` | `/code-review` |
+| `review-gerrit-comment` | `/gerrit-comment` |
+
+Type `/` in the agent chat to invoke a skill. Agent personas are auto-detected from `agents/`.
 
 ## What It Checks
 

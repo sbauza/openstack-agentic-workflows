@@ -37,15 +37,40 @@ The workflow supports MCP server integrations for enhanced automation, but can o
 
 The workflow automatically detects MCP availability at startup and uses the appropriate method.
 
-## Setup
+## Usage
 
-To test this workflow via ACP's "Custom Workflow" feature:
+### Ambient Code Platform (ACP)
+
+Load this workflow via ACP's "Custom Workflow" feature:
 
 | Field | Value |
 |-------|-------|
 | **URL** | `https://github.com/sbauza/openstack-agentic-workflows.git` |
 | **Branch** | The branch with your changes |
 | **Path** | `workflows/gerrit-to-gitlab` |
+
+### Claude Code
+
+Run `claude` from the workflow directory to auto-load skills, rules, and personas:
+
+```bash
+cd openstack-agentic-workflows/workflows/gerrit-to-gitlab
+claude
+```
+
+Skills are available as slash commands: `/backport`, `/test`, `/create-mr`. The backport specialist persona (`agents/backport-specialist.md`) is loaded automatically via `CLAUDE.md`.
+
+### Cursor
+
+Open the repository root in Cursor. Skills are discovered via symlinks in `.agents/skills/` with the `gtg-` prefix:
+
+| Cursor Skill | Maps To |
+|--------------|---------|
+| `gtg-backport` | `/backport` |
+| `gtg-test` | `/test` |
+| `gtg-create-mr` | `/create-mr` |
+
+Type `/` in the agent chat to invoke a skill. The backport specialist persona is auto-detected from `agents/`.
 
 ## What It Does
 

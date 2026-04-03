@@ -18,7 +18,9 @@ This workflow helps Nova bug triagers quickly classify bug reports against the N
 - **Nova source checkout** (auto-managed): The workflow automatically clones the Nova repository to `/workspace/repos/nova/` from `https://opendev.org/openstack/nova.git` if not already present. No manual setup needed.
 - **Launchpad OAuth credentials** (optional, for write operations): Set `LP_ACCESS_TOKEN` and `LP_ACCESS_SECRET` environment variables to enable posting comments and updating bug status via `/update-launchpad`. Without these, the workflow operates in read-only mode and generates fallback artifacts for manual posting. See **Generating Launchpad OAuth Tokens** below.
 
-## Setup
+## Usage
+
+### Ambient Code Platform (ACP)
 
 Load this workflow in ACP as a Custom Workflow:
 
@@ -26,6 +28,30 @@ Load this workflow in ACP as a Custom Workflow:
 2. Add the repository: `https://github.com/sbauza/openstack-agentic-workflows.git`
 3. Set the branch (e.g., `main`)
 4. Set the path: `workflows/nova-bug-triage`
+
+### Claude Code
+
+Run `claude` from the workflow directory to auto-load skills, rules, and personas:
+
+```bash
+cd openstack-agentic-workflows/workflows/nova-bug-triage
+claude
+```
+
+Skills are available as slash commands: `/triage`, `/reproduce`, `/report`, `/update-launchpad`. Agent personas (`bug-triager`, `openstack-operator`, `nova-coresec`) are loaded automatically via `CLAUDE.md`.
+
+### Cursor
+
+Open the repository root in Cursor. Skills are discovered via symlinks in `.agents/skills/` with the `nova-bug-` prefix:
+
+| Cursor Skill | Maps To |
+|--------------|---------|
+| `nova-bug-triage` | `/triage` |
+| `nova-bug-reproduce` | `/reproduce` |
+| `nova-bug-report` | `/report` |
+| `nova-bug-update-launchpad` | `/update-launchpad` |
+
+Type `/` in the agent chat to invoke a skill. Agent personas are auto-detected from `agents/`.
 
 ## Generating Launchpad OAuth Tokens
 
