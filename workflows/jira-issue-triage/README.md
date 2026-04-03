@@ -18,7 +18,9 @@ This workflow helps Nova bug triagers quickly classify JIRA issues against the N
 - **Atlassian MCP integration** (required for JIRA access): Configure the Atlassian integration in your ACP Workspace Settings. The workflow checks MCP availability at startup and reports the status.
 - **Nova source checkout** (auto-managed): The workflow automatically clones the Nova repository to `/workspace/repos/nova/` from `https://opendev.org/openstack/nova.git` if not already present. No manual setup needed.
 
-## Setup
+## Usage
+
+### Ambient Code Platform (ACP)
 
 Load this workflow in ACP as a Custom Workflow:
 
@@ -26,6 +28,30 @@ Load this workflow in ACP as a Custom Workflow:
 2. Add the repository: `https://github.com/sbauza/openstack-agentic-workflows.git`
 3. Set the branch (e.g., `main`)
 4. Set the path: `workflows/jira-issue-triage`
+
+### Claude Code
+
+Run `claude` from the workflow directory to auto-load skills, rules, and personas:
+
+```bash
+cd openstack-agentic-workflows/workflows/jira-issue-triage
+claude
+```
+
+Skills are available as slash commands: `/triage`, `/reproduce`, `/report`, `/update-jira`. Agent personas (`bug-triager`, `openstack-operator`, `nova-coresec`) are loaded automatically via `CLAUDE.md`.
+
+### Cursor
+
+Open the repository root in Cursor. Skills are discovered via symlinks in `.agents/skills/` with the `jira-` prefix:
+
+| Cursor Skill | Maps To |
+|--------------|---------|
+| `jira-triage` | `/triage` |
+| `jira-reproduce` | `/reproduce` |
+| `jira-report` | `/report` |
+| `jira-update-jira` | `/update-jira` |
+
+Type `/` in the agent chat to invoke a skill. Agent personas are auto-detected from `agents/`.
 
 ## What It Does
 

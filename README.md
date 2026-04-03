@@ -18,6 +18,83 @@ All content is authored once and discovered by multiple tools through standard c
 | [**nova-spec-workflow**](workflows/nova-spec-workflow/) | Generate well-structured nova-spec proposals from JIRA RFE tickets or free-form feature descriptions with architectural review | `/create-spec`, `/refine-spec`, `/blueprint` |
 | [**gerrit-to-gitlab**](workflows/gerrit-to-gitlab/) | Backport merged upstream OpenStack Gerrit changes to internal GitLab repository stable branches | `/backport`, `/test`, `/create-mr` |
 
+## Quickstart
+
+### Invoking Skills
+
+Skills are the primary entry points for each workflow. They are invoked as slash commands.
+
+**Claude Code** -- run `claude` from any workflow directory, then use slash commands:
+
+```bash
+cd workflows/nova-review
+claude
+# Inside Claude Code:
+/code-review https://review.opendev.org/c/openstack/nova/+/912345
+/spec-review specs/2024.2/approved/my-feature.rst
+```
+
+**Cursor** -- open the repo root in Cursor, then type `/` in the agent chat. Skills are prefixed by workflow to avoid name collisions:
+
+```text
+/review-code-review     # same as /code-review in nova-review
+/jira-triage            # same as /triage in jira-issue-triage
+/gtg-backport           # same as /backport in gerrit-to-gitlab
+```
+
+**ACP** -- load any workflow via Custom Workflow, then use the unprefixed skill names (`/triage`, `/backport`, etc.).
+
+### All Available Skills
+
+| Workflow | Skill | Cursor Name | What It Does |
+|----------|-------|-------------|--------------|
+| nova-review | `/spec-review` | `review-spec-review` | Review a nova-specs proposal |
+| nova-review | `/code-review` | `review-code-review` | Review Nova code changes |
+| nova-review | `/gerrit-comment` | `review-gerrit-comment` | Post review to Gerrit |
+| nova-bug-triage | `/triage` | `nova-bug-triage` | Triage a Launchpad bug |
+| nova-bug-triage | `/reproduce` | `nova-bug-reproduce` | Assess bug reproducibility |
+| nova-bug-triage | `/report` | `nova-bug-report` | Generate triage report |
+| nova-bug-triage | `/update-launchpad` | `nova-bug-update-launchpad` | Post triage to Launchpad |
+| jira-issue-triage | `/triage` | `jira-triage` | Triage a JIRA issue |
+| jira-issue-triage | `/reproduce` | `jira-reproduce` | Assess issue reproducibility |
+| jira-issue-triage | `/report` | `jira-report` | Generate triage report |
+| jira-issue-triage | `/update-jira` | `jira-update-jira` | Generate JIRA update instructions |
+| nova-spec-workflow | `/create-spec` | `spec-create-spec` | Generate a nova-spec from RFE or description |
+| nova-spec-workflow | `/refine-spec` | `spec-refine-spec` | Refine a spec with architectural review |
+| nova-spec-workflow | `/blueprint` | `spec-blueprint` | Add Launchpad blueprint URL |
+| gerrit-to-gitlab | `/backport` | `gtg-backport` | Cherry-pick a Gerrit change to GitLab |
+| gerrit-to-gitlab | `/test` | `gtg-test` | Run tests on a backport branch |
+| gerrit-to-gitlab | `/create-mr` | `gtg-create-mr` | Create a GitLab merge request |
+
+### Using Agent Personas
+
+Personas are specialized subagents that skills invoke automatically when needed. You can also reference them directly in conversation.
+
+**Claude Code** -- personas are loaded via `@` references in `CLAUDE.md`. Within a workflow session, mention a persona to get its perspective:
+
+```text
+# Personas are invoked automatically by skills, but you can also ask directly:
+"What would nova-core say about this change?"
+"Can you review this from a security perspective?" (triggers nova-coresec)
+```
+
+**Cursor** -- persona files in `agents/` are auto-detected. Reference them in your prompt:
+
+```text
+@nova-core.md review this diff for versioning issues
+@bug-triager.md classify this bug report
+```
+
+### Persona Reference
+
+| Persona | File | Expertise | Used By |
+|---------|------|-----------|---------|
+| Nova Core Reviewer | `@nova-core.md` | Versioning, conductor boundary, API microversions, upgrade safety | nova-review, nova-spec-workflow |
+| Nova Core Security | `@nova-coresec.md` | Privsep, RBAC, credentials, vulnerability assessment | nova-review, nova-bug-triage, jira-issue-triage, nova-spec-workflow |
+| OpenStack Bug Triager | `@bug-triager.md` | Bug classification, Launchpad lifecycle, common not-a-bug patterns | nova-bug-triage, jira-issue-triage |
+| Backport Specialist | `@backport-specialist.md` | Dependency analysis, conflict resolution, stable branch conventions | gerrit-to-gitlab |
+| OpenStack Operator | `@openstack-operator.md` | Config troubleshooting, deployment topology, upgrade paths | nova-bug-triage, jira-issue-triage |
+
 ## Using Workflows
 
 ### Cursor

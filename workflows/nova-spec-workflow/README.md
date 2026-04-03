@@ -18,7 +18,7 @@ Generate well-structured nova-spec proposals from JIRA RFE tickets or free-form 
 
 ## Usage
 
-### Load the Workflow
+### Ambient Code Platform (ACP)
 
 1. In ACP, select **"Custom Workflow..."**
 2. Fill in the fields:
@@ -26,6 +26,29 @@ Generate well-structured nova-spec proposals from JIRA RFE tickets or free-form 
    - **Branch**: `main`
    - **Path**: `workflows/nova-spec-workflow`
 3. Click **"Load Workflow"**
+
+### Claude Code
+
+Run `claude` from the workflow directory to auto-load skills, rules, and personas:
+
+```bash
+cd openstack-agentic-workflows/workflows/nova-spec-workflow
+claude
+```
+
+Skills are available as slash commands: `/create-spec`, `/refine-spec`, `/blueprint`. Agent personas (`nova-core`, `nova-coresec`) are loaded automatically via `CLAUDE.md`.
+
+### Cursor
+
+Open the repository root in Cursor. Skills are discovered via symlinks in `.agents/skills/` with the `spec-` prefix:
+
+| Cursor Skill | Maps To |
+|--------------|---------|
+| `spec-create-spec` | `/create-spec` |
+| `spec-refine-spec` | `/refine-spec` |
+| `spec-blueprint` | `/blueprint` |
+
+Type `/` in the agent chat to invoke a skill. Agent personas are auto-detected from `agents/`.
 
 ### Create a Spec from a JIRA RFE
 
