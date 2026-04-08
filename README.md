@@ -2,6 +2,30 @@
 
 Workflow repository for OpenStack services, usable with **Cursor**, **Claude Code**, and the **Ambient Code Platform** (ACP).
 
+## Table of Contents
+
+- [Overview](#overview)
+- [Available Workflows](#available-workflows)
+- [Quickstart](#quickstart)
+  - [Invoking Skills](#invoking-skills)
+  - [All Available Skills](#all-available-skills)
+  - [Using Agent Personas](#using-agent-personas)
+  - [Persona Reference](#persona-reference)
+- [Using Workflows](#using-workflows)
+  - [Cursor](#cursor)
+  - [Claude Code](#claude-code)
+  - [Ambient Code Platform (ACP)](#ambient-code-platform-acp)
+  - [How Discovery Works Across Tools](#how-discovery-works-across-tools)
+- [Configuring MCP Servers](#configuring-mcp-servers)
+  - [Atlassian (JIRA)](#atlassian-jira)
+  - [Gerrit](#gerrit)
+  - [GitLab](#gitlab)
+- [Shared Knowledge](#shared-knowledge)
+- [Agent Personas](#agent-personas)
+- [Repository Structure](#repository-structure)
+- [Design Principles](#design-principles)
+- [Contributing](#contributing)
+
 ## Overview
 
 This repository contains workflow definitions tailored for OpenStack development. Each workflow provides structured processes — skills, rules, and project-specific knowledge — that guide AI agents through complex OpenStack tasks like code review, spec authoring, bug triage, backporting, and Gerrit interaction.
