@@ -358,7 +358,7 @@ Use the "Custom Workflow" feature to test without merging to main:
 "systemPrompt": "You help with OpenStack development"
 
 // ✅ Specific and actionable
-"systemPrompt": "You are a Nova community member...\n\n## Skills\n- /code-review\n..."
+"systemPrompt": "You are a Nova community member...\n\n## Skills\n- /nova-code-review\n..."
 ```
 
 ### Duplicating Deterministic Checks
