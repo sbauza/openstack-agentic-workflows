@@ -36,10 +36,10 @@ All content is authored once and discovered by multiple tools through standard c
 
 | Workflow | Description | Skills |
 |----------|-------------|--------|
-| [**nova-review**](workflows/nova-review/) | Review Nova code changes and nova-specs proposals against project conventions and architecture | `/spec-review`, `/code-review`, `/gerrit-comment` |
-| [**nova-bug-triage**](workflows/nova-bug-triage/) | Triage Nova Launchpad bug reports by validating whether they describe genuine defects or fall into invalid categories | `/triage`, `/reproduce`, `/report`, `/update-launchpad` |
+| [**nova-review**](workflows/nova-review/) | Review Nova code changes and nova-specs proposals against project conventions and architecture | `/nova-spec-review`, `/nova-code-review`, `/nova-gerrit-comment` |
+| [**nova-bug-triage**](workflows/nova-bug-triage/) | Triage Nova Launchpad bug reports by validating whether they describe genuine defects or fall into invalid categories | `/nova-triage`, `/nova-reproduce`, `/nova-report`, `/nova-update-launchpad` |
 | [**jira-issue-triage**](workflows/jira-issue-triage/) | Triage Nova JIRA issue reports against source code, classifying validity and generating update instructions | `/triage`, `/reproduce`, `/report`, `/update-jira` |
-| [**nova-spec-workflow**](workflows/nova-spec-workflow/) | Generate well-structured nova-spec proposals from JIRA RFE tickets or free-form feature descriptions with architectural review | `/create-spec`, `/refine-spec`, `/blueprint` |
+| [**nova-spec-workflow**](workflows/nova-spec-workflow/) | Generate well-structured nova-spec proposals from JIRA RFE tickets or free-form feature descriptions with architectural review | `/nova-create-spec`, `/nova-refine-spec`, `/nova-blueprint` |
 | [**gerrit-to-gitlab**](workflows/gerrit-to-gitlab/) | Backport merged upstream OpenStack Gerrit changes to internal GitLab repository stable branches | `/backport`, `/test`, `/create-mr` |
 
 ## Quickstart
@@ -54,38 +54,38 @@ Skills are the primary entry points for each workflow. They are invoked as slash
 cd workflows/nova-review
 claude
 # Inside Claude Code:
-/code-review https://review.opendev.org/c/openstack/nova/+/912345
-/spec-review specs/2024.2/approved/my-feature.rst
+/nova-code-review https://review.opendev.org/c/openstack/nova/+/912345
+/nova-spec-review specs/2024.2/approved/my-feature.rst
 ```
 
 **Cursor** -- open the repo root in Cursor, then type `/` in the agent chat. Skills are prefixed by workflow to avoid name collisions:
 
 ```text
-/review-code-review     # same as /code-review in nova-review
+/review-code-review     # same as /nova-code-review in nova-review
 /jira-triage            # same as /triage in jira-issue-triage
 /gtg-backport           # same as /backport in gerrit-to-gitlab
 ```
 
-**ACP** -- load any workflow via Custom Workflow, then use the unprefixed skill names (`/triage`, `/backport`, etc.).
+**ACP** -- load any workflow via Custom Workflow, then use the skill names directly (`/nova-triage`, `/backport`, etc.).
 
 ### All Available Skills
 
 | Workflow | Skill | Cursor Name | What It Does |
 |----------|-------|-------------|--------------|
-| nova-review | `/spec-review` | `review-spec-review` | Review a nova-specs proposal |
-| nova-review | `/code-review` | `review-code-review` | Review Nova code changes |
-| nova-review | `/gerrit-comment` | `review-gerrit-comment` | Post review to Gerrit |
-| nova-bug-triage | `/triage` | `nova-bug-triage` | Triage a Launchpad bug |
-| nova-bug-triage | `/reproduce` | `nova-bug-reproduce` | Assess bug reproducibility |
-| nova-bug-triage | `/report` | `nova-bug-report` | Generate triage report |
-| nova-bug-triage | `/update-launchpad` | `nova-bug-update-launchpad` | Post triage to Launchpad |
+| nova-review | `/nova-spec-review` | `review-spec-review` | Review a nova-specs proposal |
+| nova-review | `/nova-code-review` | `review-code-review` | Review Nova code changes |
+| nova-review | `/nova-gerrit-comment` | `review-gerrit-comment` | Post review to Gerrit |
+| nova-bug-triage | `/nova-triage` | `nova-bug-triage` | Triage a Launchpad bug |
+| nova-bug-triage | `/nova-reproduce` | `nova-bug-reproduce` | Assess bug reproducibility |
+| nova-bug-triage | `/nova-report` | `nova-bug-report` | Generate triage report |
+| nova-bug-triage | `/nova-update-launchpad` | `nova-bug-update-launchpad` | Post triage to Launchpad |
 | jira-issue-triage | `/triage` | `jira-triage` | Triage a JIRA issue |
 | jira-issue-triage | `/reproduce` | `jira-reproduce` | Assess issue reproducibility |
 | jira-issue-triage | `/report` | `jira-report` | Generate triage report |
 | jira-issue-triage | `/update-jira` | `jira-update-jira` | Generate JIRA update instructions |
-| nova-spec-workflow | `/create-spec` | `spec-create-spec` | Generate a nova-spec from RFE or description |
-| nova-spec-workflow | `/refine-spec` | `spec-refine-spec` | Refine a spec with architectural review |
-| nova-spec-workflow | `/blueprint` | `spec-blueprint` | Add Launchpad blueprint URL |
+| nova-spec-workflow | `/nova-create-spec` | `spec-create-spec` | Generate a nova-spec from RFE or description |
+| nova-spec-workflow | `/nova-refine-spec` | `spec-refine-spec` | Refine a spec with architectural review |
+| nova-spec-workflow | `/nova-blueprint` | `spec-blueprint` | Add Launchpad blueprint URL |
 | gerrit-to-gitlab | `/backport` | `gtg-backport` | Cherry-pick a Gerrit change to GitLab |
 | gerrit-to-gitlab | `/test` | `gtg-test` | Run tests on a backport branch |
 | gerrit-to-gitlab | `/create-mr` | `gtg-create-mr` | Create a GitLab merge request |
@@ -452,8 +452,8 @@ See [`agents/README.md`](agents/README.md) for details on how personas work, whe
 └── skills/                    # Cursor skill discovery (symlinks to .claude/skills/)
     ├── gtg-backport/          # → workflows/gerrit-to-gitlab/.claude/skills/backport
     ├── jira-triage/           # → workflows/jira-issue-triage/.claude/skills/triage
-    ├── review-code-review/    # → workflows/nova-review/.claude/skills/code-review
-    ├── spec-create-spec/      # → workflows/nova-spec-workflow/.claude/skills/create-spec
+    ├── review-code-review/    # → workflows/nova-review/.claude/skills/nova-code-review
+    ├── spec-create-spec/      # → workflows/nova-spec-workflow/.claude/skills/nova-create-spec
     └── ...                    # (17 symlinks total, prefixed by workflow)
 .cursor/
 └── rules/
@@ -472,7 +472,7 @@ workflows/
 │   ├── .ambient/
 │   │   └── ambient.json       # Workflow config (name, description, prompts)
 │   ├── .claude/
-│   │   └── skills/            # Review skills (spec-review, code-review, gerrit-comment)
+│   │   └── skills/            # Review skills (nova-spec-review, nova-code-review, nova-gerrit-comment)
 │   ├── AGENTS.md
 │   ├── CLAUDE.md
 │   ├── rules.md
