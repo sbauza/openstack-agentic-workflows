@@ -40,13 +40,13 @@ Skills are available as slash commands: `/nova-create-spec`, `/nova-refine-spec`
 
 ### Cursor
 
-Open the repository root in Cursor. Skills are discovered via symlinks in `.agents/skills/` with the `spec-` prefix:
+Open the repository root in Cursor. Skills are discovered via symlinks in `.agents/skills/`:
 
 | Cursor Skill | Maps To |
 |--------------|---------|
-| `spec-create-spec` | `/nova-create-spec` |
-| `spec-refine-spec` | `/nova-refine-spec` |
-| `spec-blueprint` | `/nova-blueprint` |
+| `nova-create-spec` | `/nova-create-spec` |
+| `nova-refine-spec` | `/nova-refine-spec` |
+| `nova-blueprint` | `/nova-blueprint` |
 
 Type `/` in the agent chat to invoke a skill. Agent personas are auto-detected from `agents/`.
 

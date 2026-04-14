@@ -42,14 +42,14 @@ Skills are available as slash commands: `/nova-triage`, `/nova-reproduce`, `/nov
 
 ### Cursor
 
-Open the repository root in Cursor. Skills are discovered via symlinks in `.agents/skills/` with the `nova-bug-` prefix:
+Open the repository root in Cursor. Skills are discovered via symlinks in `.agents/skills/`:
 
 | Cursor Skill | Maps To |
 |--------------|---------|
-| `nova-bug-triage` | `/nova-triage` |
-| `nova-bug-reproduce` | `/nova-reproduce` |
-| `nova-bug-report` | `/nova-report` |
-| `nova-bug-update-launchpad` | `/nova-update-launchpad` |
+| `nova-triage` | `/nova-triage` |
+| `nova-reproduce` | `/nova-reproduce` |
+| `nova-report` | `/nova-report` |
+| `nova-update-launchpad` | `/nova-update-launchpad` |
 
 Type `/` in the agent chat to invoke a skill. Agent personas are auto-detected from `agents/`.
 

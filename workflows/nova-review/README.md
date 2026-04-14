@@ -49,13 +49,13 @@ Skills are available as slash commands: `/nova-spec-review`, `/nova-code-review`
 
 ### Cursor
 
-Open the repository root in Cursor. Skills are discovered via symlinks in `.agents/skills/` with the `review-` prefix:
+Open the repository root in Cursor. Skills are discovered via symlinks in `.agents/skills/`:
 
 | Cursor Skill | Maps To |
 |--------------|---------|
-| `review-code-review` | `/nova-code-review` |
-| `review-spec-review` | `/nova-spec-review` |
-| `review-gerrit-comment` | `/nova-gerrit-comment` |
+| `nova-code-review` | `/nova-code-review` |
+| `nova-spec-review` | `/nova-spec-review` |
+| `nova-gerrit-comment` | `/nova-gerrit-comment` |
 
 Type `/` in the agent chat to invoke a skill. Agent personas are auto-detected from `agents/`.
 
